@@ -11,8 +11,7 @@ typedef struct Node {
 
 Node* createNode(char data) {
     Node* newNode = (Node*)malloc(sizeof(Node));
-    if (newNode == NULL)
-    {
+    if (newNode == NULL) {
         fprintf(stderr, "메모리 할당 실패\n");
         exit(1);
     }
@@ -35,10 +34,10 @@ Node* buildTree(const char* s, int* index, Node* parent) {
     if (s[*index] == ' ') {
         (*index)++;
     }
-  
+    
     if (s[*index] == '(') {
-        (*index)++; // '(' 건너뛰기
- 
+        (*index)++;
+        
         Node** temp_children = (Node**)malloc(sizeof(Node*));
         if (temp_children == NULL) {
             fprintf(stderr, "메모리 할당 실패\n");
@@ -46,12 +45,10 @@ Node* buildTree(const char* s, int* index, Node* parent) {
         }
         int temp_count = 0;
         
-       
         while (s[*index] != ')') {
             Node* child = buildTree(s, index, current);
             if (child != NULL) {
                 temp_count++;
-              
                 temp_children = (Node**)realloc(temp_children, sizeof(Node*) * temp_count);
                 if (temp_children == NULL) {
                     fprintf(stderr, "메모리 재할당 실패\n");
@@ -59,12 +56,11 @@ Node* buildTree(const char* s, int* index, Node* parent) {
                 }
                 temp_children[temp_count - 1] = child;
             }
-           
             if (s[*index] == ' ') {
                 (*index)++;
             }
         }
-    
+        
         current->children = temp_children;
         current->child_count = temp_count;
 
@@ -117,19 +113,20 @@ int countLeafNodes(Node* root) {
     return count;
 }
 
-int main()
-{
-    const char* input = "(A (B (C D) E (G H (I J (K (L) M (N))))))";
+int main() {
+    char input[256];
     int index = 0;
  
+    scanf("%[^\n]s", input); 
+
     int root_start = 0;
     while (input[root_start] == '(' || input[root_start] == ' ') {
         root_start++;
     }
-    
+
     Node* root = createNode(input[root_start]);
     index = root_start + 1;
-   
+
     if (input[index] == ' ') {
         index++;
     }
@@ -149,7 +146,7 @@ int main()
                 temp_count++;
                 temp_children = (Node**)realloc(temp_children, sizeof(Node*) * temp_count);
                 if (temp_children == NULL) {
-                    fprintf(stderr, "ERROR: 메모리 재할당 실패\n");
+                    fprintf(stderr, "메모리 재할당 실패\n");
                     exit(1);
                 }
                 temp_children[temp_count - 1] = child;
@@ -166,8 +163,11 @@ int main()
     int height = calculateHeight(root);
     int node_count = countNodes(root);
     int leaf_count = countLeafNodes(root);
-    
+
     printf("%d, %d, %d\n", height, node_count, leaf_count);
+
+    freeTree(root);
     
     return 0;
 }
+
